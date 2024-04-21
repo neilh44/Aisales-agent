@@ -1,36 +1,7 @@
 import speech_recognition as sr
 import subprocess
 import spacy
-from playsound import playsound
-from gtts import gTTS
-import tempfile
-import os
-
-def text_to_speech(text):
-    print("Bot:", text)
-    tts = gTTS(text=text, lang='en')
-    # Save the generated speech to a temporary file
-    with tempfile.NamedTemporaryFile(delete=False) as temp_audio:
-        tts.save(temp_audio.name)
-        # Play the temporary audio file
-        playsound.playsound(temp_audio.name)
-    # Delete the temporary audio file after playing
-    os.unlink(temp_audio.name)
-
-# Load the spaCy model
-nlp = spacy.load("en_core_web_md")
-
-# Predefined responses or knowledge base
-knowledge_base = {
-    "cumin seeds": {
-        "price": "10 USD",
-        "brand": "Pehel",
-        "quality": ["S99", "Europe", "Bold"],
-        "color": "Brown",
-        "origin": "Ahmedabad",
-        "moq": "20 kg per bag"
-    }
-}
+import pyttsx3
 
 # Function to convert speech to text
 def speech_to_text():
@@ -53,6 +24,21 @@ def speech_to_text():
 def dial_phone_number(phone_number):
     subprocess.call(["xdg-open", "tel:" + phone_number])
 
+# Load the spaCy model
+nlp = spacy.load("en_core_web_md")
+
+# Predefined responses or knowledge base
+knowledge_base = {
+    "cumin seeds": {
+        "price": "10 USD",
+        "brand": "Pehel",
+        "quality": ["S99", "Europe", "Bold"],
+        "color": "Brown",
+        "origin": "Ahmedabad",
+        "moq": "20 kg per bag"
+    }
+}
+
 # Function to perform semantic search and retrieve relevant response
 def get_response(query):
     max_similarity = 0
@@ -67,19 +53,12 @@ def get_response(query):
             best_response = response_text
     return best_response
 
-
-# Function to convert text to speech and play it
 # Function to convert text to speech and play it
 def text_to_speech(text):
     print("Bot:", text)
-    tts = gTTS(text=text, lang='en')
-    # Save the generated speech to a temporary file
-    with tempfile.NamedTemporaryFile(delete=False) as temp_audio:
-        tts.save(temp_audio.name)
-        # Play the temporary audio file
-        playsound(temp_audio.name)
-    # Delete the temporary audio file after playing
-    os.unlink(temp_audio.name)
+    engine = pyttsx3.init()
+    engine.say(text)
+    engine.runAndWait()
 
 def main():
     while True:
