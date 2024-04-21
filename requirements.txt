@@ -8,3 +8,4 @@ gtts
 playsound
 pyttsx3
 pyobjc
+spacy
