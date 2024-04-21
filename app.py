@@ -1,7 +1,5 @@
 import speech_recognition as sr
-import os
 import subprocess
-from datetime import datetime
 
 # Function to convert speech to text
 def speech_to_text():
@@ -12,12 +10,12 @@ def speech_to_text():
         audio = r.listen(source)
     try:
         text = r.recognize_google(audio)
-        return text
+        return text.lower()
     except sr.UnknownValueError:
         print("Sorry, could not understand audio")
         return ""
     except sr.RequestError as e:
-        print("Could not request results; {0}".format(e))
+        print(f"Could not request results; {e}")
         return ""
 
 # Function to dial a phone number
@@ -32,10 +30,14 @@ def pitch_cumin_seeds():
     brand_name = "ABC Seeds"
     return f"The price of cumin seeds is {price}. They are of {quality} quality and sold under the brand name {brand_name}."
 
+# Function to convert text to speech and play it
+def text_to_speech(text):
+    os.system(f"say '{text}'")
+
 def main():
     while True:
         # Convert speech to text
-        query = speech_to_text().lower()
+        query = speech_to_text()
         
         if query:
             if "cumin seeds" in query:
@@ -43,11 +45,7 @@ def main():
             elif "dial" in query:
                 # Extract the phone number from the query
                 words = query.split()
-                phone_number = None
-                for word in words:
-                    if word.isdigit() and len(word) == 10:
-                        phone_number = word
-                        break
+                phone_number = next((word for word in words if word.isdigit() and len(word) == 10), None)
                 if phone_number:
                     dial_phone_number(phone_number)
                     response = f"Dialing {phone_number}..."
@@ -56,11 +54,10 @@ def main():
             else:
                 response = "Sorry, I didn't understand your query."
             
-            # Output response
-            print("Bot:", response)
+            # Output response as speech
+            text_to_speech(response)
         else:
             print("Bot: Sorry, I couldn't understand you. Could you please repeat?")
-            
 
 if __name__ == "__main__":
     main()
