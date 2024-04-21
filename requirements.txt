@@ -1,1 +1,4 @@
-textblob
+streamlit 
+pyaudio 
+numpy 
+sounddevice
