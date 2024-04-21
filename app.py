@@ -1,5 +1,8 @@
 import csv
 import nltk
+nltk.download('punkt')
+nltk.download('stopwords')
+nltk.download('wordnet')
 import torch
 import torchaudio
 from transformers import Wav2Vec2ForCTC, Wav2Vec2Tokenizer
