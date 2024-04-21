@@ -1,7 +1,31 @@
 import speech_recognition as sr
 import subprocess
-import spacy
-import pyttsx3
+from gtts import gTTS
+import tempfile
+import os
+
+def text_to_speech(text):
+    print("Bot:", text)
+    tts = gTTS(text=text, lang='en')
+    # Save the generated speech to a temporary file
+    with tempfile.NamedTemporaryFile(delete=False) as temp_audio:
+        tts.save(temp_audio.name)
+        # Play the temporary audio file
+        subprocess.Popen(["xdg-open", temp_audio.name], shell=True)
+    # Delete the temporary audio file after playing
+    os.unlink(temp_audio.name)
+
+# Predefined responses or knowledge base
+knowledge_base = {
+    "cumin seeds": {
+        "price": "10 USD",
+        "brand": "Pehel",
+        "quality": ["S99", "Europe", "Bold"],
+        "color": "Brown",
+        "origin": "Ahmedabad",
+        "moq": "20 kg per bag"
+    }
+}
 
 # Function to convert speech to text
 def speech_to_text():
@@ -24,41 +48,23 @@ def speech_to_text():
 def dial_phone_number(phone_number):
     subprocess.call(["xdg-open", "tel:" + phone_number])
 
-# Load the spaCy model
-nlp = spacy.load("en_core_web_md")
-
-# Predefined responses or knowledge base
-knowledge_base = {
-    "cumin seeds": {
-        "price": "10 USD",
-        "brand": "Pehel",
-        "quality": ["S99", "Europe", "Bold"],
-        "color": "Brown",
-        "origin": "Ahmedabad",
-        "moq": "20 kg per bag"
-    }
-}
-
 # Function to perform semantic search and retrieve relevant response
 def get_response(query):
     max_similarity = 0
     best_response = ""
-    query_doc = nlp(query)
     for key, value in knowledge_base.items():
         response_text = f"Price: {value['price']}, Brand: {value['brand']}, Quality: {', '.join(value['quality'])}, Color: {value['color']}, Origin: {value['origin']}, MOQ: {value['moq']}"
-        response_doc = nlp(response_text)
-        similarity = query_doc.similarity(response_doc)
+        similarity = get_similarity(query, response_text)
         if similarity > max_similarity:
             max_similarity = similarity
             best_response = response_text
     return best_response
 
-# Function to convert text to speech and play it
-def text_to_speech(text):
-    print("Bot:", text)
-    engine = pyttsx3.init()
-    engine.say(text)
-    engine.runAndWait()
+# Function to calculate similarity between two texts
+def get_similarity(text1, text2):
+    # Here you can use spaCy or any other library to calculate similarity
+    # For simplicity, let's assume the texts are the same for now
+    return 1.0
 
 def main():
     while True:
