@@ -1,11 +1,5 @@
 import csv
-import nltk
-nltk.download('punkt')
-nltk.download('stopwords')
-nltk.download('wordnet')
-import torch
-import torchaudio
-from transformers import Wav2Vec2ForCTC, Wav2Vec2Tokenizer
+import spacy
 
 # Load contacts from CSV file
 def load_contacts(csv_file):
@@ -16,19 +10,14 @@ def load_contacts(csv_file):
             contacts.append(row)
     return contacts
 
-# Initialize NLP components
-nltk.download('punkt')
-tokenizer = Wav2Vec2Tokenizer.from_pretrained("facebook/wav2vec2-base-960h")
-model = Wav2Vec2ForCTC.from_pretrained("facebook/wav2vec2-base-960h")
+# Initialize spaCy
+nlp = spacy.load("en_core_web_sm")
 
-# Convert speech to text
-def speech_to_text(audio_file):
-    waveform, _ = torchaudio.load(audio_file)
-    input_values = tokenizer(waveform, return_tensors="pt").input_values
-    logits = model(input_values).logits
-    predicted_ids = torch.argmax(logits, dim=-1)
-    transcription = tokenizer.batch_decode(predicted_ids)
-    return transcription
+# Preprocess text
+def preprocess_text(text):
+    doc = nlp(text)
+    tokens = [token.lemma_.lower() for token in doc if token.is_alpha and not token.is_stop]
+    return ' '.join(tokens)
 
 # Load objections from a file
 def load_objections(file_path):
@@ -52,7 +41,7 @@ def sales_call(contact_file, objections_file):
         print("Conversation:")
         # Simulate voice-to-text, here you should record audio and save it as a file
         audio_file = "audio.wav"  # Simulated audio file
-        input_text = speech_to_text(audio_file)
+        input_text = "simulated text"  # Replace with actual voice-to-text conversion
         # Handle objections using NLP
         response = handle_objections(input_text, objections)
         print("Agent:", response)
