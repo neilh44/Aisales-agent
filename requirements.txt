@@ -1,8 +1,4 @@
-streamlit 
-pyaudio 
-numpy 
+streamlit
+pyaudio
+numpy
 sounddevice
-libasound-dev 
-portaudio19-dev 
-libportaudio2 
-libportaudiocpp0
