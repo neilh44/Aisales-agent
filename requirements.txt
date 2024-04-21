@@ -2,3 +2,4 @@ streamlit
 pyaudio
 numpy
 sounddevice
+pipwin
