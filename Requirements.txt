@@ -1,3 +1,4 @@
+textblob
 spacy
 transformers
 torchaudio
