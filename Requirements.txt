@@ -1,4 +1,2 @@
 transformers
-pandas
-numpy
-pipeline
+torchaudio
