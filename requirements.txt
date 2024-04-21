@@ -4,3 +4,4 @@ numpy
 sounddevice
 pipwin
 portaudio
+soundfile
