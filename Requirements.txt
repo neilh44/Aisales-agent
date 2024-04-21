@@ -1,4 +1,4 @@
 transformers
 pandas
 numpy
-pip
+pipeline
