@@ -1,4 +1,1 @@
 textblob
-spacy
-transformers
-torchaudio
