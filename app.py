@@ -1,5 +1,36 @@
 import speech_recognition as sr
 import subprocess
+import spacy
+from playsound import playsound
+from gtts import gTTS
+import tempfile
+import os
+
+def text_to_speech(text):
+    print("Bot:", text)
+    tts = gTTS(text=text, lang='en')
+    # Save the generated speech to a temporary file
+    with tempfile.NamedTemporaryFile(delete=False) as temp_audio:
+        tts.save(temp_audio.name)
+        # Play the temporary audio file
+        playsound.playsound(temp_audio.name)
+    # Delete the temporary audio file after playing
+    os.unlink(temp_audio.name)
+
+# Load the spaCy model
+nlp = spacy.load("en_core_web_md")
+
+# Predefined responses or knowledge base
+knowledge_base = {
+    "cumin seeds": {
+        "price": "10 USD",
+        "brand": "Pehel",
+        "quality": ["S99", "Europe", "Bold"],
+        "color": "Brown",
+        "origin": "Ahmedabad",
+        "moq": "20 kg per bag"
+    }
+}
 
 # Function to convert speech to text
 def speech_to_text():
@@ -22,17 +53,33 @@ def speech_to_text():
 def dial_phone_number(phone_number):
     subprocess.call(["xdg-open", "tel:" + phone_number])
 
-# Function to provide information about cumin seeds
-def pitch_cumin_seeds():
-    # Your logic to fetch cumin seeds information from a database or API
-    price = "10 USD"
-    quality = "High"
-    brand_name = "ABC Seeds"
-    return f"The price of cumin seeds is {price}. They are of {quality} quality and sold under the brand name {brand_name}."
+# Function to perform semantic search and retrieve relevant response
+def get_response(query):
+    max_similarity = 0
+    best_response = ""
+    query_doc = nlp(query)
+    for key, value in knowledge_base.items():
+        response_text = f"Price: {value['price']}, Brand: {value['brand']}, Quality: {', '.join(value['quality'])}, Color: {value['color']}, Origin: {value['origin']}, MOQ: {value['moq']}"
+        response_doc = nlp(response_text)
+        similarity = query_doc.similarity(response_doc)
+        if similarity > max_similarity:
+            max_similarity = similarity
+            best_response = response_text
+    return best_response
+
 
 # Function to convert text to speech and play it
+# Function to convert text to speech and play it
 def text_to_speech(text):
-    os.system(f"say '{text}'")
+    print("Bot:", text)
+    tts = gTTS(text=text, lang='en')
+    # Save the generated speech to a temporary file
+    with tempfile.NamedTemporaryFile(delete=False) as temp_audio:
+        tts.save(temp_audio.name)
+        # Play the temporary audio file
+        playsound(temp_audio.name)
+    # Delete the temporary audio file after playing
+    os.unlink(temp_audio.name)
 
 def main():
     while True:
@@ -40,22 +87,12 @@ def main():
         query = speech_to_text()
         
         if query:
-            if "cumin seeds" in query:
-                response = pitch_cumin_seeds()
-            elif "dial" in query:
-                # Extract the phone number from the query
-                words = query.split()
-                phone_number = next((word for word in words if word.isdigit() and len(word) == 10), None)
-                if phone_number:
-                    dial_phone_number(phone_number)
-                    response = f"Dialing {phone_number}..."
-                else:
-                    response = "Please provide a valid 10-digit phone number to dial."
+            response = get_response(query)
+            if response:
+                # Output response as speech
+                text_to_speech(response)
             else:
-                response = "Sorry, I didn't understand your query."
-            
-            # Output response as speech
-            text_to_speech(response)
+                print("Bot: Sorry, I couldn't find a relevant response.")
         else:
             print("Bot: Sorry, I couldn't understand you. Could you please repeat?")
 
