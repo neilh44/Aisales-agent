@@ -1,5 +1,3 @@
-# virtual_sales_agent.py
-
 import csv
 from transformers import pipeline
 
@@ -44,4 +42,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
