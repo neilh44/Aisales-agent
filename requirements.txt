@@ -1,4 +1,10 @@
+pipwin
+pyaudio
 streamlit
 numpy
-sounddevice
-pipwin
+sounddevice==0.4.1
+SpeechRecognition
+gtts
+playsound
+pyttsx3
+pyobjc
