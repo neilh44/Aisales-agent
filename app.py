@@ -1,5 +1,5 @@
 import csv
-import spacy
+from textblob import TextBlob
 
 # Load contacts from CSV file
 def load_contacts(csv_file):
@@ -10,13 +10,10 @@ def load_contacts(csv_file):
             contacts.append(row)
     return contacts
 
-# Initialize spaCy
-nlp = spacy.load("en_core_web_sm")
-
-# Preprocess text
+# Preprocess text using TextBlob
 def preprocess_text(text):
-    doc = nlp(text)
-    tokens = [token.lemma_.lower() for token in doc if token.is_alpha and not token.is_stop]
+    blob = TextBlob(text)
+    tokens = [word.lemmatize().lower() for word in blob.words if word.isalpha()]
     return ' '.join(tokens)
 
 # Load objections from a file
