@@ -1,19 +1,9 @@
 import speech_recognition as sr
 import subprocess
-from gtts import gTTS
-import tempfile
-import os
+import pyttsx3
 
-def text_to_speech(text):
-    print("Bot:", text)
-    tts = gTTS(text=text, lang='en')
-    # Save the generated speech to a temporary file
-    with tempfile.NamedTemporaryFile(delete=False) as temp_audio:
-        tts.save(temp_audio.name)
-        # Play the temporary audio file
-        subprocess.Popen(["xdg-open", temp_audio.name], shell=True)
-    # Delete the temporary audio file after playing
-    os.unlink(temp_audio.name)
+# Initialize the pyttsx3 engine
+engine = pyttsx3.init()
 
 # Predefined responses or knowledge base
 knowledge_base = {
@@ -44,10 +34,6 @@ def speech_to_text():
         print(f"Could not request results; {e}")
         return ""
 
-# Function to dial a phone number
-def dial_phone_number(phone_number):
-    subprocess.call(["xdg-open", "tel:" + phone_number])
-
 # Function to perform semantic search and retrieve relevant response
 def get_response(query):
     max_similarity = 0
@@ -75,7 +61,8 @@ def main():
             response = get_response(query)
             if response:
                 # Output response as speech
-                text_to_speech(response)
+                engine.say(response)
+                engine.runAndWait()
             else:
                 print("Bot: Sorry, I couldn't find a relevant response.")
         else:
