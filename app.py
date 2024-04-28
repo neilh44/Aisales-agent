@@ -1,5 +1,7 @@
 import csv
 import time
+import requests
+from io import StringIO
 from twilio.rest import Client
 from transformers import GPT2LMHeadModel, GPT2Tokenizer
 
@@ -58,7 +60,7 @@ def sales_process(phone_number, requirement):
     response = generate_response("Follow up for upcoming requirement")
     print("Agent: " + response)
 
-# Fetch CSV file from GitHub
+# Fetch CSV file from updated GitHub URL
 csv_url = "https://raw.githubusercontent.com/neilh44/Aisales-agent/main/Ti_leads.csv"
 response = requests.get(csv_url)
 csv_data = response.text
