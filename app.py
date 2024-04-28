@@ -32,10 +32,15 @@ def make_call(to_phone_number, message):
     except Exception as e:
         print(f"Failed to initiate call to {to_phone_number}. Error: {str(e)}")
 
-# Function to generate response using GPT-2 model
+# # Function to generate response using GPT-2 model
 def generate_response(prompt):
     input_ids = tokenizer.encode(prompt, return_tensors="pt")
-    response_ids = model.generate(input_ids, max_length=1000, num_return_sequences=1)
+    attention_mask = torch.ones(input_ids.shape, dtype=torch.long)  # Set attention mask to 1 for all input tokens
+    response_ids = model.generate(input_ids, 
+                                  attention_mask=attention_mask,
+                                  pad_token_id=tokenizer.eos_token_id,  # Set pad token id to eos_token_id
+                                  max_length=1000, 
+                                  num_return_sequences=1)
     response = tokenizer.decode(response_ids[0], skip_special_tokens=True)
     return response
 
