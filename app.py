@@ -36,6 +36,14 @@ def make_call(to_phone_number, message):
     except Exception as e:
         print(f"Failed to initiate call to {to_phone_number}. Error: {str(e)}")
 
+response_ids = model.generate(
+    input_ids, 
+    attention_mask=attention_mask,
+    pad_token_id=tokenizer.eos_token_id,
+    max_length=1000, 
+    num_return_sequences=1
+)
+
 # Function to generate response using GPT-2 model
 def generate_response(prompt):
     input_ids = tokenizer.encode(prompt, return_tensors="pt")
