@@ -2,6 +2,7 @@ import csv
 import time
 import requests
 import torch
+import subprocess
 from io import StringIO
 from twilio.rest import Client
 from transformers import GPT2LMHeadModel, GPT2Tokenizer
@@ -47,6 +48,10 @@ def generate_response(prompt):
 
 # Function to handle sales process
 def sales_process(phone_number, requirement):
+    # Record the call
+    record_command = f"some_recording_command {phone_number}"  # Replace with actual recording command
+    subprocess.run(record_command, shell=True)
+    
     make_call(phone_number, "Hello! We have noticed that you might be interested in our products. Let me tell you more about them.")
     # Wait for call to be connected
     time.sleep(30)  # Adjust as necessary
