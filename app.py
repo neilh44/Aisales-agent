@@ -32,7 +32,12 @@ recordings_dir = 'recordings'
 os.makedirs(recordings_dir, exist_ok=True)
 
 # Function to make a call using Twilio
-def make_call(to_phone_number, message):
+@app.route('/make_call', methods=['POST'])
+def make_call():
+    data = request.get_json()
+    to_phone_number = data.get('to_phone_number')
+    message = data.get('message')
+
     try:
         # Generate TwiML for recording a call
         twiml = generate_twiml_for_recording()
@@ -50,8 +55,10 @@ def make_call(to_phone_number, message):
         record_call_details(call.sid, to_phone_number)
         
         time.sleep(10)  # Wait for call to connect (adjust as necessary)
+        return jsonify({'status': 'success'})
     except Exception as e:
         print(f"Failed to initiate call to {to_phone_number}. Error: {str(e)}")
+        return jsonify({'status': 'error', 'message': str(e)})
 
 # Function to generate TwiML for recording a call
 def generate_twiml_for_recording(timeout=10, transcribe=True):
@@ -82,25 +89,32 @@ def generate_response(prompt):
 
 # Function to handle sales process
 def sales_process(phone_number, requirement):
-    # Record the call
+    # Record the call in the main thread
     record_command = f"some_recording_command {phone_number}"  # Replace with actual recording command
     subprocess.run(record_command, shell=True)
     
+    # Make the call using Twilio
     make_call(phone_number, "Hello! We have noticed that you might be interested in our products. Let me tell you more about them.")
+    
     # Wait for call to be connected
     time.sleep(30)  # Adjust as necessary
+    
     # Generate response based on requirement
     response = generate_response(requirement)
     print("Agent: " + response)
+    
     # Promote the product
     response = generate_response("Promote product")
     print("Agent: " + response)
+    
     # Upsell or cross-sell
     response = generate_response("Upsell or cross-sell")
     print("Agent: " + response)
+    
     # Close the deal
     response = generate_response("Close the deal")
     print("Agent: " + response)
+    
     # Follow up for upcoming requirement
     response = generate_response("Follow up for upcoming requirement")
     print("Agent: " + response)
