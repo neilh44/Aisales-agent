@@ -1,11 +1,2 @@
-pipwin
 streamlit
-numpy
-sounddevice==0.4.1
-SpeechRecognition
-gtts
-playsound
-pyttsx3
-spacy
 twilio==9.0.5
-pyobjc
