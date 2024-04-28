@@ -82,3 +82,27 @@ for row in csv_reader:
     phone_number = row['Contact']
     requirement = row['Requirement']
     sales_process(phone_number, requirement)
+    
+from twilio.twiml.voice_response import Record, VoiceResponse
+
+# Function to generate TwiML for recording a call
+def generate_twiml_for_recording(timeout=10, transcribe=True):
+    # Create a VoiceResponse object
+    response = VoiceResponse()
+
+    # Add a Record element to the response
+    response.record(timeout=timeout, transcribe=transcribe)
+
+    # Return the generated TwiML
+    return str(response)
+
+# Main function to demonstrate generating TwiML for recording a call
+def main():
+    # Generate TwiML for recording a call
+    twiml = generate_twiml_for_recording(timeout=10, transcribe=True)
+
+    # Print the generated TwiML
+    print(twiml)
+
+if __name__ == "__main__":
+    main()
