@@ -16,6 +16,9 @@ model_name = "gpt2"
 tokenizer = GPT2Tokenizer.from_pretrained(model_name)
 model = GPT2LMHeadModel.from_pretrained(model_name)
 
+# Set pad token ID to EOS token ID for open-end generation
+model.config.pad_token_id = tokenizer.eos_token_id
+
 # Initialize Twilio client
 client = Client(account_sid, auth_token)
 
