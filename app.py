@@ -1,37 +1,73 @@
-import pandas as pd
-import autodialer  # Assuming you have an autodialer module
-from transformers import AutoModelForSequenceClassification, AutoTokenizer
-import torch
+import csv
+import time
+from twilio.rest import Client
+from transformers import AutoModelForCausalLM, AutoTokenizer
 
-# Load the Mistral 7B model and tokenizer
-model_name = "sales_agent/mistral-7b"
-model = AutoModelForSequenceClassification.from_pretrained(model_name)
+# Twilio credentials
+account_sid = 'AC66a810449e6945a613d5161b54adf708'
+auth_token = '90987d62cedd4ab1369f71da4c0b1d86'
+from_phone_number = '+12513166471'
+
+# Load Mistral 8B model
+model_name = "EleutherAI/mistral-cyt-large"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForCausalLM.from_pretrained(model_name)
 
-# Load CSV file with required numbers and requirements
-data = pd.read_csv("requirements.csv")
+# Initialize Twilio client
+client = Client(account_sid, auth_token)
 
-# Iterate through each row in the CSV file
-for index, row in data.iterrows():
-    phone_number = row["phone_number"]
-    requirement = row["requirement"]
-    
-    # Call the required number using autodialer
-    autodialer.dial(phone_number)
-    
-    # Verify the requirement using Mistral 7B model
-    inputs = tokenizer(requirement, return_tensors="pt", padding=True, truncation=True)
-    outputs = model(**inputs)
-    predicted_class = torch.argmax(outputs.logits).item()
-    if predicted_class == 1:  # Assuming 1 represents a positive verification
-        print("Requirement verified successfully.")
-        # Promote the product
-        print("Promoting the product...")
-        # Upsell or cross-sell the product
-        print("Upselling or cross-selling the product...")
-        # Close the deal
-        print("Closing the deal...")
-        # Follow up for upcoming requirement
-        print("Following up for upcoming requirement...")
-    else:
-        print("Requirement verification failed.")
+# Function to make a call using Twilio
+def make_call(to_phone_number, message):
+    try:
+        call = client.calls.create(
+            url='http://demo.twilio.com/docs/voice.xml',
+            to=to_phone_number,
+            from_=from_phone_number,
+            method='GET'
+        )
+        print(f"Call to {to_phone_number} initiated successfully.")
+        time.sleep(10)  # Wait for call to connect (adjust as necessary)
+    except Exception as e:
+        print(f"Failed to initiate call to {to_phone_number}. Error: {str(e)}")
+
+# Function to generate response using Mistral 8B model
+def generate_response(prompt):
+    input_ids = tokenizer.encode(prompt, return_tensors="pt")
+    response_ids = model.generate(input_ids, max_length=1000, num_return_sequences=1)
+    response = tokenizer.decode(response_ids[0], skip_special_tokens=True)
+    return response
+
+# Function to handle sales process
+def sales_process(phone_number, requirement):
+    make_call(phone_number, "Hello! We have noticed that you might be interested in our products. Let me tell you more about them.")
+    # Wait for call to be connected
+    time.sleep(30)  # Adjust as necessary
+    # Generate response based on requirement
+    response = generate_response(requirement)
+    print("Agent: " + response)
+    # Promote the product
+    response = generate_response("Promote product")
+    print("Agent: " + response)
+    # Upsell or cross-sell
+    response = generate_response("Upsell or cross-sell")
+    print("Agent: " + response)
+    # Close the deal
+    response = generate_response("Close the deal")
+    print("Agent: " + response)
+    # Follow up for upcoming requirement
+    response = generate_response("Follow up for upcoming requirement")
+    print("Agent: " + response)
+
+# Function to read contacts from CSV file and initiate sales process for each contact
+def initiate_sales(csv_file):
+    with open(csv_file, 'r') as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            phone_number = row['Phone']
+            requirement = row['Requirement']
+            sales_process(phone_number, requirement)
+
+# Main function
+if __name__ == "__main__":
+    csv_file = "contacts.csv"  # Change to your CSV file name
+    initiate_sales(csv_file)
