@@ -1,6 +1,6 @@
 streamlit
 twilio==9.0.5
 transformers
-torch 
+Torch 
 torchvision 
 torchaudio
