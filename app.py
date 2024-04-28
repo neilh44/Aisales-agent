@@ -7,6 +7,7 @@ import os
 import subprocess
 import time
 import requests
+import threading
 
 app = Flask(__name__)
 
@@ -31,12 +32,7 @@ recordings_dir = 'recordings'
 os.makedirs(recordings_dir, exist_ok=True)
 
 # Function to make a call using Twilio
-@app.route('/make_call', methods=['POST'])
-def make_call():
-    data = request.get_json()
-    to_phone_number = data.get('to_phone_number')
-    message = data.get('message')
-
+def make_call(to_phone_number, message):
     try:
         # Generate TwiML for recording a call
         twiml = generate_twiml_for_recording()
@@ -54,10 +50,8 @@ def make_call():
         record_call_details(call.sid, to_phone_number)
         
         time.sleep(10)  # Wait for call to connect (adjust as necessary)
-        return jsonify({'status': 'success'})
     except Exception as e:
         print(f"Failed to initiate call to {to_phone_number}. Error: {str(e)}")
-        return jsonify({'status': 'error', 'message': str(e)})
 
 # Function to generate TwiML for recording a call
 def generate_twiml_for_recording(timeout=10, transcribe=True):
@@ -123,7 +117,8 @@ def start_dialing():
     for row in csv_reader:
         phone_number = row['Contact']
         requirement = row['Requirement']
-        sales_process(phone_number, requirement)
+        # Start sales process in a new thread
+        threading.Thread(target=sales_process, args=(phone_number, requirement)).start()
 
 if __name__ == '__main__':
     app.run(debug=True)
