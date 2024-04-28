@@ -68,6 +68,6 @@ csv_data = response.text
 # Read contacts from CSV data and initiate sales process for each contact
 csv_reader = csv.DictReader(StringIO(csv_data))
 for row in csv_reader:
-    phone_number = row['Contact No']
+    phone_number = row['Contact_No']
     requirement = row['Requirement']
-    sales_process(Contact No, requirement)
+    sales_process(phone_number, requirement)
