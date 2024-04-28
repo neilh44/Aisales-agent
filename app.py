@@ -4,7 +4,7 @@ import requests
 import torch
 from io import StringIO
 from twilio.rest import Client
-from transformers import GPT2Model, GPT2Tokenizer
+from transformers import GPT2LMHeadModel, GPT2Tokenizer
 
 # Twilio credentials
 account_sid = 'AC66a810449e6945a613d5161b54adf708'
@@ -14,7 +14,7 @@ from_phone_number = '+12513166471'
 # Load GPT-2 model
 model_name = "gpt2"
 tokenizer = GPT2Tokenizer.from_pretrained(model_name)
-model = GPT2Model.from_pretrained(model_name)
+model = GPT2LMHeadModel.from_pretrained(model_name)
 
 # Initialize Twilio client
 client = Client(account_sid, auth_token)
@@ -36,10 +36,7 @@ def make_call(to_phone_number, message):
 # Function to generate response using GPT-2 model
 def generate_response(prompt):
     input_ids = tokenizer.encode(prompt, return_tensors="pt")
-    attention_mask = torch.ones(input_ids.shape, dtype=torch.long)  # Set attention mask to 1 for all input tokens
     response_ids = model.generate(input_ids, 
-                                  attention_mask=attention_mask,
-                                  pad_token_id=tokenizer.eos_token_id,  # Set pad token id to eos_token_id
                                   max_length=1000, 
                                   num_return_sequences=1)
     response = tokenizer.decode(response_ids[0], skip_special_tokens=True)
