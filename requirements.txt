@@ -1,5 +1,4 @@
 pipwin
-pyaudio
 streamlit
 numpy
 sounddevice==0.4.1
@@ -8,3 +7,4 @@ gtts
 playsound
 pyttsx3
 spacy
+twillio
