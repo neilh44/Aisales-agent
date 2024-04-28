@@ -7,4 +7,5 @@ gtts
 playsound
 pyttsx3
 spacy
-twilio
+twilio==9.0.5
+
