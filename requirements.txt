@@ -7,4 +7,3 @@ gtts
 playsound
 pyttsx3
 spacy
-twillio
