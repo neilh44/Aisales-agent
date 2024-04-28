@@ -4,3 +4,4 @@ transformers
 Torch 
 torchvision 
 torchaudio
+flask
