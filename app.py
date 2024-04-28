@@ -58,16 +58,14 @@ def sales_process(phone_number, requirement):
     response = generate_response("Follow up for upcoming requirement")
     print("Agent: " + response)
 
-# Function to read contacts from CSV file and initiate sales process for each contact
-def initiate_sales(csv_file):
-    with open(csv_file, 'r') as file:
-        reader = csv.DictReader(file)
-        for row in reader:
-            phone_number = row['Phone']
-            requirement = row['Requirement']
-            sales_process(phone_number, requirement)
+# Fetch CSV file from GitHub
+csv_url = "https://raw.githubusercontent.com/neilh44/Aisales-agent/main/Ti_leads.csv"
+response = requests.get(csv_url)
+csv_data = response.text
 
-# Main function
-if __name__ == "__main__":
-    csv_file = "contacts.csv"  # Change to your CSV file name
-    initiate_sales(csv_file)
+# Read contacts from CSV data and initiate sales process for each contact
+csv_reader = csv.DictReader(StringIO(csv_data))
+for row in csv_reader:
+    phone_number = row['Phone']
+    requirement = row['Requirement']
+    sales_process(phone_number, requirement)
