@@ -4,7 +4,7 @@ import requests
 import torch
 from io import StringIO
 from twilio.rest import Client
-from transformers import GPT2Model, GPT2Tokenizer  # Updated import statement
+from transformers import GPT2Model, GPT2Tokenizer
 
 # Twilio credentials
 account_sid = 'AC66a810449e6945a613d5161b54adf708'
@@ -14,7 +14,7 @@ from_phone_number = '+12513166471'
 # Load GPT-2 model
 model_name = "gpt2"
 tokenizer = GPT2Tokenizer.from_pretrained(model_name)
-model = GPT2Model.from_pretrained(model_name)  # Updated model import
+model = GPT2Model.from_pretrained(model_name)
 
 # Initialize Twilio client
 client = Client(account_sid, auth_token)
@@ -35,11 +35,36 @@ def make_call(to_phone_number, message):
 
 # Function to generate response using GPT-2 model
 def generate_response(prompt):
-    # Your generate_response function implementation here
+    input_ids = tokenizer.encode(prompt, return_tensors="pt")
+    attention_mask = torch.ones(input_ids.shape, dtype=torch.long)  # Set attention mask to 1 for all input tokens
+    response_ids = model.generate(input_ids, 
+                                  attention_mask=attention_mask,
+                                  pad_token_id=tokenizer.eos_token_id,  # Set pad token id to eos_token_id
+                                  max_length=1000, 
+                                  num_return_sequences=1)
+    response = tokenizer.decode(response_ids[0], skip_special_tokens=True)
+    return response
 
 # Function to handle sales process
 def sales_process(phone_number, requirement):
-    # Your sales_process function implementation here
+    make_call(phone_number, "Hello! We have noticed that you might be interested in our products. Let me tell you more about them.")
+    # Wait for call to be connected
+    time.sleep(30)  # Adjust as necessary
+    # Generate response based on requirement
+    response = generate_response(requirement)
+    print("Agent: " + response)
+    # Promote the product
+    response = generate_response("Promote product")
+    print("Agent: " + response)
+    # Upsell or cross-sell
+    response = generate_response("Upsell or cross-sell")
+    print("Agent: " + response)
+    # Close the deal
+    response = generate_response("Close the deal")
+    print("Agent: " + response)
+    # Follow up for upcoming requirement
+    response = generate_response("Follow up for upcoming requirement")
+    print("Agent: " + response)
 
 # Fetch CSV file from updated GitHub URL
 csv_url = "https://raw.githubusercontent.com/neilh44/Aisales-agent/main/Ti_leads.csv"
