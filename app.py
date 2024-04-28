@@ -32,10 +32,9 @@ def make_call(to_phone_number, message):
 
 # Function to generate response using Mistral 8B model
 def generate_response(prompt):
-    input_ids = tokenizer.encode(prompt, return_tensors="pt")
-    response_ids = model.generate(input_ids, max_length=1000, num_return_sequences=1)
-    response = tokenizer.decode(response_ids[0], skip_special_tokens=True)
-    return response
+    full_prompt = "Agent: Hello! We have noticed that you might be interested in our products. Let me tell you more about them.\n" + prompt
+    input_ids = tokenizer.encode(full_prompt, return_tensors="pt")
+    ...
 
 # Function to handle sales process
 def sales_process(phone_number, requirement):
