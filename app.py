@@ -84,6 +84,33 @@ for row in csv_reader:
     sales_process(phone_number, requirement)
     
 from twilio.twiml.voice_response import Record, VoiceResponse
+from twilio.rest import Client
+
+# Twilio credentials
+account_sid = 'AC66a810449e6945a613d5161b54adf708'
+auth_token = '90987d62cedd4ab1369f71da4c0b1d86'
+from_phone_number = '+12513166471'
+
+# Initialize Twilio client
+client = Client(account_sid, auth_token)
+
+# Function to make a call using Twilio
+def make_call(to_phone_number, message):
+    try:
+        # Generate TwiML for recording a call
+        twiml = generate_twiml_for_recording()
+        
+        # Initiate the call with Twilio
+        call = client.calls.create(
+            to=to_phone_number,
+            from_=from_phone_number,
+            twiml=twiml
+        )
+        
+        print(f"Call to {to_phone_number} initiated successfully.")
+        time.sleep(10)  # Wait for call to connect (adjust as necessary)
+    except Exception as e:
+        print(f"Failed to initiate call to {to_phone_number}. Error: {str(e)}")
 
 # Function to generate TwiML for recording a call
 def generate_twiml_for_recording(timeout=10, transcribe=True):
@@ -96,13 +123,4 @@ def generate_twiml_for_recording(timeout=10, transcribe=True):
     # Return the generated TwiML
     return str(response)
 
-# Main function to demonstrate generating TwiML for recording a call
-def main():
-    # Generate TwiML for recording a call
-    twiml = generate_twiml_for_recording(timeout=10, transcribe=True)
-
-    # Print the generated TwiML
-    print(twiml)
-
-if __name__ == "__main__":
-    main()
+# Rest of the code remains the same
